@@ -1,9 +1,13 @@
-// Algoritmos
+// Referencia Algoritmos
 // https://html.rincondelvago.com/codigo-de-hamming.html
 // https://chovis2.tripod.com/CODIGO_HAMMING.HTM
 // https://www.youtube.com/watch?v=ay9LRC4IdpM
 // https://www.youtube.com/watch?v=3Td-aqtD14M
 // https://www.geeksforgeeks.org/hamming-code-in-computer-network/
+
+// Comando para ejecutar:
+// g++ hamming/hamming.cpp -o hamming/hamming
+// ./hamming/hamming
 
 #include <iostream>
 #include <bits/stdc++.h>
@@ -39,17 +43,30 @@ void hammingCode(std::string bits)
             int num = (int)bits[counter];
             if(num == 49) num = 1;
             else if(num == 48) num = 0;
-            else
-            {
-                std::cout << "Invalid Char" << std::endl;
-                return;
-            }
             nums[i] = num;
             counter++;
         }
     }
 
-    
+    for(int t = 0; t < r; t++)
+    {
+        int exp = pow(2, t);
+        std::cout << "=> " << t << " exp: " << exp << std::endl;
+        for(int i = 1; i < totalLong; i++)
+        {
+            if (((i >> t) & 1) == 1)
+            {
+                if (exp != i) nums[exp] = nums[exp] ^ nums[i];
+            }
+            std::cout << i << std::endl;
+            // std::cout << i << " : " << nums[i] << std::endl;
+        }
+    }
+
+    for(int i = 0; i < totalLong; i++)
+    {
+        std::cout << i << " : " << nums[i] << std::endl;
+    }
     
     return;
 }
