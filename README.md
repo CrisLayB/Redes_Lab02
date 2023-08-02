@@ -22,7 +22,7 @@ g++ hamming/hamming.cpp -o hamming/hamming
 Ejemplo:
 
 ```
-$ ./hamming/hamming 1011001
+./hamming/hamming 1011001
 Input: 1011001
 Output: 10101001110
 r: 4
@@ -32,23 +32,27 @@ r: 4
 
 ```
 javac hamming/Hamming.java
-java hamming/Hamming plot_bits r
+java hamming/Hamming plot_bits
 ```
 
 Ejemplo:
 
 ```
-$ java hamming/Hamming 10101001110 4
-Input: 10101001110
-Output: Todo Bien : 10101001110
+java hamming/Hamming 10101001110
+Input: 10101001110 and 4
+Output: Todo bien 10101001110
+Original: 1011001
 ```
 
 En caso de error (Donde se agregara 1 en el 4to caracter):
 
 ```
-$ java hamming/Hamming 10111001110 4
-Input: 10111001110
-Output: Errores Encontrados : 10101001110
+$ java hamming/Hamming 10111001110
+Input: 10111001110 and 4
+Output: Errores encontrados
+==> 7 bit: 1
+Trama de bits Arreglado: 10101001110
+Original: 1011001
 ```
 
 ## => Fletcher Checksum

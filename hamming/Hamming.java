@@ -17,17 +17,23 @@ import java.util.ArrayList;
 
 public class Hamming {
 
-    private static void checkPlotBits(String plotBits, int r) {
+    private static void checkPlotBits(String plotBits) {
+        ArrayList<Integer> parityNums = new ArrayList<Integer>();
+
+        int r = 0;
+        while(Math.pow(2, r) <= plotBits.length()) {
+            parityNums.add(0, (int)Math.pow(2, r) - 1);
+            r++;
+        }
+        
         System.out.println("Input: " + plotBits + " and " + r);
 
         ArrayList<Integer> errorsFound = new ArrayList<Integer>();
         
         for (int i = 0; i < r; i++) {
             int exp = (int)Math.pow(2, i);
-            int controller = 0;
+            int controller = 0, bit = -1;
             boolean isOne = false;
-            int bit = -1;
-            System.out.println("2^" + i + " : " + exp);
             
             for (int j = plotBits.length() - 1; j >= 0; j--) {
                 controller++;
@@ -38,16 +44,10 @@ public class Hamming {
 
                 if(bit == -1) bit = (int)plotBits.charAt(j);
                 
-                if(isOne){
-                    bit = bit ^ (int)plotBits.charAt(j);
-                    System.out.println("--> " + plotBits.charAt(j));
-                }
+                if(isOne) bit = bit ^ (int)plotBits.charAt(j);
             }
 
-            System.out.println("RESULT: " + bit + " and " + (char)bit);
-            if(bit == 49){
-                errorsFound.add(exp);
-            }
+            if(bit == 49) errorsFound.add(exp);
         }
         
         if(!errorsFound.isEmpty()){
@@ -64,32 +64,34 @@ public class Hamming {
 
             bitsResultBuilder.reverse();
             System.out.println("Trama de bits Arreglado: " + bitsResultBuilder);
-            originalPlot(new String(bitsResultBuilder));
+            originalPlot(new String(bitsResultBuilder), parityNums);
             return;
         }
         
         System.out.println("Output: Todo bien " + plotBits);
-        originalPlot(plotBits);
+        originalPlot(plotBits, parityNums);
     }
 
-    private static void originalPlot(String plotToTransform){
-        // ! SOLO FALTA ESTO Y LISTO
-        System.out.println("Original: " + plotToTransform);
+    private static void originalPlot(String plotToTransform, ArrayList<Integer> parityNums){
+        StringBuilder strTemp = new StringBuilder(plotToTransform);
+        strTemp.reverse();
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < strTemp.length(); i++) {
+            if(!parityNums.contains(i)) result.append(strTemp.charAt(i));
+        }        
+        
+        System.out.println("Original: " + result.reverse());
     }
     
     public static void main(String[] args) {
-        if(args.length != 2) {
+        if(args.length != 1) {
             System.out.println("No ingresaste el trama de bits esperado");
             System.out.println("\nEjemplo de input esperado:");
             System.out.println("java hamming/Hamming plot_bits 10101001110 4");
             return;
-        }
+        }        
         
-        if(!args[1].chars().allMatch( Character::isDigit )){
-            System.out.println("El segundo argumento de numero de paridad no es int");
-            return;
-        }
-        
-        checkPlotBits(args[0], Integer.parseInt(args[1]));
+        checkPlotBits(args[0]);
     }
 }
