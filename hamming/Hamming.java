@@ -17,12 +17,12 @@ import java.util.ArrayList;
 
 public class Hamming {
 
-    private static void checkPlotBits(String plotBits, int parityBits) {
-        System.out.println("Input: " + plotBits + " and " + parityBits);
+    private static void checkPlotBits(String plotBits, int r) {
+        System.out.println("Input: " + plotBits + " and " + r);
 
         ArrayList<Integer> errorsFound = new ArrayList<Integer>();
         
-        for (int i = 0; i < parityBits; i++) {
+        for (int i = 0; i < r; i++) {
             int exp = (int)Math.pow(2, i);
             int controller = 0;
             boolean isOne = false;
@@ -49,21 +49,36 @@ public class Hamming {
                 errorsFound.add(exp);
             }
         }
-
+        
         if(!errorsFound.isEmpty()){
+            StringBuilder bitsResultBuilder = new StringBuilder(plotBits);            
+            bitsResultBuilder.reverse();
+
             System.out.println("Output: Errores encontrados");
             for (int iterable_element : errorsFound) {
-                System.out.println("==> " + iterable_element + " bit: " + plotBits.charAt(iterable_element));                  
+                int num = iterable_element - 1;                
+                System.out.println("==> " + num + " bit: " + bitsResultBuilder.charAt(num));
+                char flipNum = bitsResultBuilder.charAt(num) == '1' ? '0' : '1';
+                bitsResultBuilder.setCharAt(num, flipNum);
             }
+
+            bitsResultBuilder.reverse();
+            System.out.println("Trama de bits Arreglado: " + bitsResultBuilder);
+            originalPlot(new String(bitsResultBuilder));
             return;
         }
         
         System.out.println("Output: Todo bien " + plotBits);
+        originalPlot(plotBits);
+    }
+
+    private static void originalPlot(String plotToTransform){
+        // ! SOLO FALTA ESTO Y LISTO
+        System.out.println("Original: " + plotToTransform);
     }
     
-    public static void main(String[] args)
-    {
-        if(args.length != 2){
+    public static void main(String[] args) {
+        if(args.length != 2) {
             System.out.println("No ingresaste el trama de bits esperado");
             System.out.println("\nEjemplo de input esperado:");
             System.out.println("java hamming/Hamming plot_bits 10101001110 4");
