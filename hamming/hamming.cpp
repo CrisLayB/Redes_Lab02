@@ -1,30 +1,29 @@
-// C++ Emisor
-
-// Comando para ejecutar:
-// g++ hamming/hamming.cpp -o hamming/hamming
-// ./hamming/hamming
+/*************************************************************
+ * Universidad del Valle de Guatemala
+ * Redes - Sección 10
+ * Laboratorio 2
+ * 
+ * C++ (Emisor)
+ * 
+ * Autores: [
+ *      Cristian Laynez,
+ *      Mario de León
+ * ]
+************************************************************/
 
 #include <iostream>
 #include <bits/stdc++.h>
 
-struct Code {
-    int amount;
-    int* arrayCode;
-};
-
-Code hammingCode(std::string bits);
+void hammingCode(std::string bits);
 bool verifyPow(int numVerify, int amountNums);
 void printCode(int* arr, int totalLong);
-void printCode(int& arr);
 
-
-// 2^m >= m + r + 1
-Code hammingCode(std::string bits)
+void hammingCode(std::string bits)
 {
     int m = bits.length();
     int r = 0;
 
-    std::cout << "Input: " << bits;
+    std::cout << "Input: " << bits << std::endl;
 
     // 2^r >= m + r + 1
     while(pow(2, r) < (m + r + 1)) r++;
@@ -76,11 +75,9 @@ Code hammingCode(std::string bits)
         nums[totalLong - 1 - i] = temp;
     }
 
-    std::cout << "\nOutput: ";
+    std::cout << "Output: ";
     printCode(nums, totalLong);
-    Code results;
-    results.amount = totalLong;
-    return results;
+    std::cout << "r: " << r << std::endl;
 }
 
 bool verifyPow(int numVerify, int amountNums)
@@ -105,13 +102,18 @@ void printCode(int* arr, int totalLong)
     std::cout << std::endl;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    Code results = hammingCode("1011001");
-    // std::cout << "RESULTADOS: " << std::endl;
-    // printCode(results.arrayCode, results.amount);
-    // hammingCode("0111011");
-    // hammingCode("1001");
+    if(argc != 2)
+    {
+        std::cout << "No ingresaste el trama de bits esperado" << std::endl;
+        std::cout << "\nEjemplo de input esperado:" << std::endl;
+        std::cout << "./hamming/hamming 1011001" << std::endl;
+        return 0;
+    }
 
+    // 1001 // 0111011 // 1001
+    char *plotBits = argv[1];
+    hammingCode(plotBits);
     return 1;
 }
