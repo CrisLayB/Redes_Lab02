@@ -150,8 +150,15 @@ class Emisor {
             // Obtener el mensaje final del emisor
             String mensajeFinal = getMensajeFinal();
 
-            // Escribir el mensaje final en el archivo
-            writer.write(mensajeFinal);
+            // Agregar espacios cada 8 caracteres
+            StringBuilder mensajeConEspacios = new StringBuilder();
+            for (int i = 0; i < mensajeFinal.length(); i += 8) {
+                String grupo = mensajeFinal.substring(i, Math.min(i + 8, mensajeFinal.length()));
+                mensajeConEspacios.append(grupo).append(" ");
+            }
+
+            // Escribir el mensaje final con espacios en el archivo
+            writer.write(mensajeConEspacios.toString().trim());
 
             // Cerrar el archivo
             writer.close();
