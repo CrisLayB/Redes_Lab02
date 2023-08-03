@@ -47,10 +47,11 @@ Original: 1011001
 En caso de error (Donde se agregara 1 en el 4to caracter):
 
 ```
-$ java hamming/Hamming 10111001110
+java hamming/Hamming 10111001110
 Input: 10111001110 and 4
 Output: Errores encontrados
-==> 7 bit: 1
+10111001110
+   |
 Trama de bits Arreglado: 10101001110
 Original: 1011001
 ```

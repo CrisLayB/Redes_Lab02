@@ -15,6 +15,12 @@ package hamming;
 
 import java.util.ArrayList;
 
+class Colors {
+    public static final String RESET = "\033[0m";  // Text Reset
+    public static final String RED = "\033[0;31m";     // RED
+    public static final String GREEN = "\033[0;32m";   // GREEN
+}
+
 public class Hamming {
 
     private static void checkPlotBits(String plotBits) {
@@ -55,15 +61,30 @@ public class Hamming {
             bitsResultBuilder.reverse();
 
             System.out.println("Output: Errores encontrados");
-            for (int iterable_element : errorsFound) {
+            ArrayList<String> errors = new ArrayList<String>();
+            ArrayList<String> markErrors = new ArrayList<String>();
+            for (int i = 0; i < bitsResultBuilder.length(); i++) {
+                if(errorsFound.contains(i + 1)){
+                    errors.add(Colors.RED + bitsResultBuilder.charAt(i) + Colors.RESET);
+                    markErrors.add("|");
+                    continue;
+                }                
+                errors.add(bitsResultBuilder.charAt(i) + "");
+                markErrors.add(" ");
+            }
+                 
+            for (int i = errors.size() - 1; i >= 0; i--) System.out.print(errors.get(i));
+            System.out.println();
+            for (int i = markErrors.size() - 1; i >= 0; i--) System.out.print(markErrors.get(i));
+            
+            for (int iterable_element : errorsFound) { // Fixing Code
                 int num = iterable_element - 1;                
-                System.out.println("==> " + num + " bit: " + bitsResultBuilder.charAt(num));
                 char flipNum = bitsResultBuilder.charAt(num) == '1' ? '0' : '1';
                 bitsResultBuilder.setCharAt(num, flipNum);
             }
 
             bitsResultBuilder.reverse();
-            System.out.println("Trama de bits Arreglado: " + bitsResultBuilder);
+            System.out.println("\nTrama de bits Arreglado: " + bitsResultBuilder);
             originalPlot(new String(bitsResultBuilder), parityNums);
             return;
         }

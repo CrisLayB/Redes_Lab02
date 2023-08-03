@@ -164,64 +164,6 @@ class Emisor {
 
 }
 
-/**
-class Receptor{
-	private String mensaje_emisor;
-
-    public Receptor(String mensaje) {
-        this.mensaje_emisor = mensaje;
-    }
-        public boolean verificarChecksum() {
-        	
-        	// Obtener el checksum del mensaje
-            String checksumEmisor = mensaje_emisor.substring(mensaje_emisor.length() - 8).replaceAll("\\s+", "");
-            System.out.println("Checksum recibido: " + checksumEmisor);
-
-            // Obtener el mensaje original sin el checksum y sin espacios en blanco entre bloques de 8
-            String mensajeOriginal = mensaje_emisor.substring(0, mensaje_emisor.length() - 8).replaceAll("\\s+", "");
-            System.out.println("Mensaje original: " + mensajeOriginal);
-
-            // Dividir la cadena en grupos de 8 bits usando split()
-            String[] binary_blocks = mensajeOriginal.split("(?<=\\G.{8})");
-
-            // Mostrar los grupos de 8 bits almacenados en el arreglo String[]
-            for (int i = 0; i < binary_blocks.length; i++) {
-                System.out.println("Bloque " + i + ": " + binary_blocks[i]);
-            }
-            // Calcular el checksum del mensaje recibido
-            StringBuilder new_string = new StringBuilder("00000000");
-
-            for (String binary_block : binary_blocks) {
-                int integer = Integer.parseInt(binary_block, 2); 
-                int total_int_value = Integer.parseInt(new_string.toString(), 2); 
-                int bit_sum = integer + total_int_value;
-                
-                if (bit_sum > 255) {
-                	bit_sum = (bit_sum & 255) + 1;
-                }
-
-             // Realiza la suma directamente en binario con longitud fija de 8 bits
-                String binary_total_sum = String.format("%8s", Integer.toBinaryString(bit_sum)).replace(' ', '0');
-                new_string = new StringBuilder(binary_total_sum);
-            }
-
-            // Realiza el complemento a uno de la suma final usando XOR (^)
-            for (int i = 0; i < new_string.length(); i++) {
-                char bit = new_string.charAt(i);
-                new_string.setCharAt(i, bit == '0' ? '1' : '0');
-            }
-
-            // Comparar los checksums
-            return checksumEmisor.toString().equals(new_string.toString());
-        }
-
-        public String obtenerMensajeOriginal() {
-            // Obtener el mensaje original sin el checksum
-            return mensaje_emisor.substring(0, mensaje_emisor.length() - 8).replaceAll("\\s+", "");
-        }
-    }**/
-
-
 public class FletcherChecksum {
     public static void main(String[] args) {
         String trama = "1010100100111001";
@@ -234,17 +176,6 @@ public class FletcherChecksum {
         // Escribir el mensaje final en un archivo de texto
         String rutaArchivo = "mensaje_emisor.txt";
         emisor.escribirMensajeFinalEnArchivo(rutaArchivo);
-        
-        /***
-        System.out.println("\n***RECEPTOR***");
-        Receptor receptor = new Receptor(emisor.getMensajeFinal());
-
-        if (receptor.verificarChecksum()) {
-            System.out.println("El mensaje es valido.");
-            System.out.println("Mensaje Original: " + receptor.obtenerMensajeOriginal());
-        } else {
-            System.out.println("El mensaje ha sido alterado durante la transmisión.");
-        } **/
     }
 }
 

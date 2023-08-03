@@ -69,7 +69,8 @@ void hammingCode(std::string bits)
     }
 
     // Flip values
-    for (int i = 0; i < totalLong / 2; ++i) {
+    for (int i = 0; i < totalLong / 2; ++i) 
+    {
         int temp = nums[i];
         nums[i] = nums[totalLong - 1 - i];
         nums[totalLong - 1 - i] = temp;
