@@ -23,7 +23,7 @@ class Colors {
 
 public class Hamming {
 
-    private static void checkPlotBits(String plotBits) {
+    public static String checkPlotBits(String plotBits) {
         ArrayList<Integer> parityNums = new ArrayList<Integer>();
 
         int r = 0;
@@ -32,7 +32,7 @@ public class Hamming {
             r++;
         }
         
-        System.out.println("Input: " + plotBits + " and " + r);
+        System.out.println("Input: " + plotBits + ", r = " + r);
 
         ArrayList<Integer> errorsFound = new ArrayList<Integer>();
         
@@ -57,40 +57,45 @@ public class Hamming {
         }
         
         if(!errorsFound.isEmpty()){
-            StringBuilder bitsResultBuilder = new StringBuilder(plotBits);            
-            bitsResultBuilder.reverse();
-
-            System.out.println("Output: Errores encontrados");
-            ArrayList<String> errors = new ArrayList<String>();
-            ArrayList<String> markErrors = new ArrayList<String>();
-            for (int i = 0; i < bitsResultBuilder.length(); i++) {
-                if(errorsFound.contains(i + 1)){
-                    errors.add(Colors.RED + bitsResultBuilder.charAt(i) + Colors.RESET);
-                    markErrors.add("|");
-                    continue;
-                }                
-                errors.add(bitsResultBuilder.charAt(i) + "");
-                markErrors.add(" ");
-            }
-                 
-            for (int i = errors.size() - 1; i >= 0; i--) System.out.print(errors.get(i));
-            System.out.println();
-            for (int i = markErrors.size() - 1; i >= 0; i--) System.out.print(markErrors.get(i));
-            
-            for (int iterable_element : errorsFound) { // Fixing Code
-                int num = iterable_element - 1;                
-                char flipNum = bitsResultBuilder.charAt(num) == '1' ? '0' : '1';
-                bitsResultBuilder.setCharAt(num, flipNum);
-            }
-
-            bitsResultBuilder.reverse();
-            System.out.println("\nTrama de bits Arreglado: " + bitsResultBuilder);
-            originalPlot(new String(bitsResultBuilder), parityNums);
-            return;
+            return fixPlot(plotBits, errorsFound, parityNums);
         }
         
         System.out.println("Output: Todo bien " + plotBits);
         originalPlot(plotBits, parityNums);
+        return plotBits;
+    }
+
+    private static String fixPlot(String plotBits, ArrayList<Integer> errorsFound, ArrayList<Integer> parityNums){
+        StringBuilder bitsResultBuilder = new StringBuilder(plotBits);            
+        bitsResultBuilder.reverse();
+
+        System.out.println("Output: Errores encontrados");
+        ArrayList<String> errors = new ArrayList<String>();
+        ArrayList<String> markErrors = new ArrayList<String>();
+        for (int i = 0; i < bitsResultBuilder.length(); i++) {
+            if(errorsFound.contains(i + 1)){
+                errors.add(Colors.RED + bitsResultBuilder.charAt(i) + Colors.RESET);
+                markErrors.add("|");
+                continue;
+            }                
+            errors.add(bitsResultBuilder.charAt(i) + "");
+            markErrors.add(" ");
+        }
+                
+        for (int i = errors.size() - 1; i >= 0; i--) System.out.print(errors.get(i));
+        System.out.println();
+        for (int i = markErrors.size() - 1; i >= 0; i--) System.out.print(markErrors.get(i));
+        
+        for (int iterable_element : errorsFound) { // Fixing Code
+            int num = iterable_element - 1;                
+            char flipNum = bitsResultBuilder.charAt(num) == '1' ? '0' : '1';
+            bitsResultBuilder.setCharAt(num, flipNum);
+        }
+
+        bitsResultBuilder.reverse();
+        System.out.println("\nTrama de bits Arreglado: " + bitsResultBuilder);
+        originalPlot(new String(bitsResultBuilder), parityNums);
+        return new String(bitsResultBuilder);
     }
 
     private static void originalPlot(String plotToTransform, ArrayList<Integer> parityNums){
@@ -106,13 +111,19 @@ public class Hamming {
     }
     
     public static void main(String[] args) {
-        if(args.length != 1) {
+        if(args.length != 2) {
             System.out.println("No ingresaste el trama de bits esperado");
             System.out.println("\nEjemplo de input esperado:");
-            System.out.println("java hamming/Hamming plot_bits 10101001110 4");
+            System.out.println("java hamming/Hamming 10101001110 10101001110");
             return;
         }        
         
-        checkPlotBits(args[0]);
+        String plot = args[0];
+        String plotTrue = args[1];
+
+        String plotChecked = checkPlotBits(plot);
+
+        String result = (plotChecked.equals(plotTrue)) ? "CORRECTO" : "INCORRECTO";
+        System.out.println(result);
     }
 }

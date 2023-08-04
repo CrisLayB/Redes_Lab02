@@ -38,22 +38,24 @@ java hamming/Hamming plot_bits
 Ejemplo:
 
 ```
-java hamming/Hamming 10101001110
-Input: 10101001110 and 4
+java hamming/Hamming 10101001110 10101001110
+Input: 10101001110, r = 4
 Output: Todo bien 10101001110
 Original: 1011001
+CORRECTO
 ```
 
 En caso de error (Donde se agregara 1 en el 4to caracter):
 
 ```
-java hamming/Hamming 10111001110
-Input: 10111001110 and 4
+java hamming/Hamming 10111001110 10101001110
+Input: 10111001110, r = 4
 Output: Errores encontrados
 10111001110
    |
 Trama de bits Arreglado: 10101001110
 Original: 1011001
+CORRECTO
 ```
 
 ## => Fletcher Checksum
