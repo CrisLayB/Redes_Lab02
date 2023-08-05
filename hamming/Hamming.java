@@ -24,22 +24,15 @@ class Colors {
 public class Hamming {
 
     public static String checkPlotBits(String plotBits) {
-        ArrayList<Integer> parityNums = new ArrayList<Integer>();
-
         int r = 0;
-        while(Math.pow(2, r) <= plotBits.length()) {
-            parityNums.add(0, (int)Math.pow(2, r) - 1);
-            r++;
-        }
+        while(Math.pow(2, r) <= plotBits.length()) r++;
         
-        System.out.println("Input: " + plotBits + ", r = " + r);
-
-        ArrayList<Integer> errorsFound = new ArrayList<Integer>();
+        int[] bits = new int[r];
         
         for (int i = 0; i < r; i++) {
             int exp = (int)Math.pow(2, i);
             int controller = 0, bit = -1;
-            boolean isOne = false;
+            boolean isOne = false;        
             
             for (int j = plotBits.length() - 1; j >= 0; j--) {
                 controller++;
@@ -47,67 +40,64 @@ public class Hamming {
                     isOne = !isOne;
                     controller = 0;
                 }
-
-                if(bit == -1) bit = (int)plotBits.charAt(j);
                 
-                if(isOne) bit = bit ^ (int)plotBits.charAt(j);
+                if(isOne){
+                    int numBit = Integer.parseInt(plotBits.charAt(j) + "");
+                    bit = (bit == -1) ? numBit : bit ^ numBit;
+                }
             }
 
-            if(bit == 49) errorsFound.add(exp);
+            bits[i] = bit;
         }
+
+        String strBinary = "";
+        for (int i = bits.length - 1; i >= 0 ; i--) strBinary += bits[i];
+
+        int decimal = Integer.parseInt(strBinary, 2);
         
-        if(!errorsFound.isEmpty()){
-            return fixPlot(plotBits, errorsFound, parityNums);
-        }
-        
-        System.out.println("Output: Todo bien " + plotBits);
-        originalPlot(plotBits, parityNums);
-        return plotBits;
-    }
-
-    private static String fixPlot(String plotBits, ArrayList<Integer> errorsFound, ArrayList<Integer> parityNums){
-        StringBuilder bitsResultBuilder = new StringBuilder(plotBits);            
-        bitsResultBuilder.reverse();
-
-        System.out.println("Output: Errores encontrados");
-        ArrayList<String> errors = new ArrayList<String>();
-        ArrayList<String> markErrors = new ArrayList<String>();
-        for (int i = 0; i < bitsResultBuilder.length(); i++) {
-            if(errorsFound.contains(i + 1)){
-                errors.add(Colors.RED + bitsResultBuilder.charAt(i) + Colors.RESET);
-                markErrors.add("|");
-                continue;
-            }                
-            errors.add(bitsResultBuilder.charAt(i) + "");
-            markErrors.add(" ");
-        }
-                
-        for (int i = errors.size() - 1; i >= 0; i--) System.out.print(errors.get(i));
-        System.out.println();
-        for (int i = markErrors.size() - 1; i >= 0; i--) System.out.print(markErrors.get(i));
-        
-        for (int iterable_element : errorsFound) { // Fixing Code
-            int num = iterable_element - 1;                
-            char flipNum = bitsResultBuilder.charAt(num) == '1' ? '0' : '1';
-            bitsResultBuilder.setCharAt(num, flipNum);
+        if(decimal == 0){
+            System.out.println("Todo ok");
+            return plotBits;
         }
 
-        bitsResultBuilder.reverse();
-        System.out.println("\nTrama de bits Arreglado: " + bitsResultBuilder);
-        originalPlot(new String(bitsResultBuilder), parityNums);
-        return new String(bitsResultBuilder);
-    }
-
-    private static void originalPlot(String plotToTransform, ArrayList<Integer> parityNums){
-        StringBuilder strTemp = new StringBuilder(plotToTransform);
-        strTemp.reverse();
-
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < strTemp.length(); i++) {
-            if(!parityNums.contains(i)) result.append(strTemp.charAt(i));
+        if(decimal > plotBits.length()){
+            System.out.println("Este error no es posible de corregir");
+            return "-1";
         }        
+                
+        return fixPlot(plotBits, decimal);
+    }
+
+    private static String fixPlot(String plotBits, int decimal){
+        System.out.println("Errores encontrados");
+        StringBuilder strBuilder = new StringBuilder(plotBits);
+        strBuilder.reverse();
         
-        System.out.println("Original: " + result.reverse());
+        int pos = decimal - 1;
+
+        String indicate = "";
+        boolean stop = false;
+        int aux = 0;
+        for (int i = plotBits.length() - 1; i >= 0; i--) {
+            char bit = plotBits.charAt(aux);
+            String strBit = (i == pos) ? Colors.RED + bit + Colors.RESET : bit + "";
+            System.out.print(strBit);
+            if(i == pos) {
+                indicate += "|";
+                stop = true;
+            }
+            if(!stop) indicate += " ";
+            aux++;
+        }
+
+        System.out.println();
+        System.out.println(indicate);
+        
+        char flipBit = (strBuilder.charAt(pos) == '0') ? '1' : '0';
+        strBuilder.setCharAt(pos, flipBit);
+
+        System.out.println("Trama de bits Arreglado:");
+        return new String(strBuilder.reverse());
     }
     
     public static void main(String[] args) {
@@ -121,7 +111,10 @@ public class Hamming {
         String plot = args[0];
         String plotTrue = args[1];
 
+        System.out.println("Input: " + plot);
+
         String plotChecked = checkPlotBits(plot);
+        System.out.println("Output: " + plotChecked);
 
         String result = (plotChecked.equals(plotTrue)) ? "CORRECTO" : "INCORRECTO";
         System.out.println(result);
