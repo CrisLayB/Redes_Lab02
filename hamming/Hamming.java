@@ -13,6 +13,15 @@
 
 package hamming;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.UnknownHostException;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 class Colors {
     public static final String RESET = "\033[0m";  // Text Reset
     public static final String RED = "\033[0;31m";     // RED
@@ -20,6 +29,8 @@ class Colors {
 }
 
 public class Hamming {
+    private static String HOST = "127.0.0.1";
+    private static int PORT = 65432;
 
     public static String checkPlotBits(String plotBits) {
         int r = 0;
@@ -99,22 +110,45 @@ public class Hamming {
     }
     
     public static void main(String[] args) {
-        if(args.length != 2) {
-            System.out.println("No ingresaste el trama de bits esperado");
-            System.out.println("\nEjemplo de input esperado:");
-            System.out.println("java hamming/Hamming 10101001110 10101001110");
-            return;
-        }        
-        
-        String plot = args[0];
-        String plotTrue = args[1];
+        try {
+            ServerSocket ss = new ServerSocket(PORT);
+            Socket cs = new Socket();
+            DataOutputStream outputClient;
 
-        System.out.println("Input: " + plot);
+            System.out.println("Esperando trama de bits desde " + PORT);
 
-        String plotChecked = checkPlotBits(plot);
-        System.out.println("Output: " + plotChecked);
+            cs = ss.accept();
 
-        String result = (plotChecked.equals(plotTrue)) ? "CORRECTO" : "INCORRECTO";
-        System.out.println(result);
+            System.out.println("Trama de bits ingresado");
+
+            outputClient = new DataOutputStream(cs.getOutputStream());
+
+            outputClient.writeUTF("JAJA"); // OJO CON ESTO
+
+            BufferedReader input = new BufferedReader(new InputStreamReader(cs.getInputStream()));
+            String messagueRecived;
+
+            while((messagueRecived = input.readLine()) != null){
+                // JAJA
+                System.out.println(messagueRecived);
+            }
+
+            // Se muestra lo que recibio el servidor
+            System.out.println("The end");
+            
+            cs.close();
+            ss.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // String plot = args[0];
+
+        // System.out.println("Input: " + plot);
+
+        // String plotChecked = checkPlotBits(plot);
+        // System.out.println("Output: " + plotChecked);
+
+        // ! ==> Retornar plotChecked
     }
 }
