@@ -21,15 +21,16 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <ifaddrs.h>
+#include <unistd.h>
 
 #define HOST "127.0.0.1"
 #define PORT 65432
 
-void hammingCode(std::string bits);
+std::string hammingCode(std::string bits);
 bool verifyPow(int numVerify, int amountNums);
-void printCode(int* arr, int totalLong);
+std::string printCode(int* arr, int totalLong);
 
-void hammingCode(std::string bits)
+std::string hammingCode(std::string bits)
 {
     int m = bits.length();
     int r = 0;
@@ -88,8 +89,9 @@ void hammingCode(std::string bits)
     }
 
     std::cout << "Output: ";
-    printCode(nums, totalLong);
+    std::string result = printCode(nums, totalLong);
     std::cout << "r: " << r << std::endl;
+    return result;
 }
 
 bool verifyPow(int numVerify, int amountNums)
@@ -104,14 +106,18 @@ bool verifyPow(int numVerify, int amountNums)
     return false;
 }
 
-void printCode(int* arr, int totalLong)
+std::string printCode(int* arr, int totalLong)
 {
+    std::string str = "";
+
     for(int i = 0; i < totalLong; i++)
     {
         std::cout << arr[i];
+        str += std::to_string(arr[i]);
     }
 
     std::cout << std::endl;
+    return str;
 }
 
 int main(int argc, char *argv[])
@@ -126,10 +132,10 @@ int main(int argc, char *argv[])
 
     int status, valread, client_fd;
     struct sockaddr_in serv_addr;
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    client_fd = socket(AF_INET, SOCK_STREAM, 0);
     char buffer[1024] = { 0 };
 
-    if(clientSocket <= 0)
+    if(client_fd <= 0)
     {
         std::cout << "Error en la creacion del socket" << std::endl;
         return -1;
@@ -140,7 +146,7 @@ int main(int argc, char *argv[])
 
     // Convert IPv4 and IPv6 addresses from text to binary
     // form
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) 
+    if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
     {
         printf(
             "\nInvalid address/ Address not supported \n");
@@ -155,15 +161,15 @@ int main(int argc, char *argv[])
 
     // 1001 // 0111011 // 1001
     char *plotBits = argv[1];
-    hammingCode(plotBits);
+    std::string plot = hammingCode(plotBits);
 
-    // send(client_fd, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
+    const char* ptrPlot = plot.c_str();
+    send(client_fd, ptrPlot, strlen(ptrPlot), 0);
+    printf("Binary Plot sent\n");
     valread = read(client_fd, buffer, 1024);
     printf("%s\n", buffer);
   
     // closing the connected socket
     close(client_fd);
-
     return 1;
 }
