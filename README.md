@@ -32,13 +32,13 @@ r: 4
 
 ```
 javac hamming/Hamming.java
-java hamming/Hamming plot_bits
+java hamming/Hamming 
 ```
 
 Ejemplo:
 
 ```
-java hamming/Hamming 10101001110 10101001110
+java hamming/Hamming
 Input: 10101001110
 Output: Todo bien 10101001110
 CORRECTO

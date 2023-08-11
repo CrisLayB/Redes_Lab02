@@ -15,7 +15,11 @@ package hamming;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.UnknownHostException;
+import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -26,7 +30,6 @@ class Colors {
 }
 
 public class Hamming {
-    // private static String HOST = "127.0.0.1";
     private static int PORT = 65432;
 
     public static String checkPlotBits(String plotBits) {
@@ -107,38 +110,32 @@ public class Hamming {
     }
     
     public static void main(String[] args) {
-        BufferedReader input;
-        ServerSocket serverSocket;
-        Socket socket;
-        DataOutputStream outputClient;
+
         try {
-            serverSocket = new ServerSocket(PORT);
+            ServerSocket serverSocket = new ServerSocket(PORT);
+            System.out.println("Server listening on PORT " + PORT);
 
-            System.out.println("Esperando trama de bits desde " + PORT);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("\n===========================================");
+                System.out.println("Client connected on the host: " + clientSocket.getInetAddress());
 
-            socket = serverSocket.accept();
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            System.out.println("Trama de bits ingresado");
+                String plot = input.readLine();
+                System.out.println("Input: " + plot);
+                String plotChecked = checkPlotBits(plot);
+                System.out.println("Output: " + plotChecked);
 
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                output.println(plotChecked);
+                output.flush();
 
-            outputClient = new DataOutputStream(socket.getOutputStream());
-
-            outputClient.writeUTF("JAJA"); // OJO CON ESTO
-
-            // Recibir mensaje
-            String plot = input.readLine();
-            System.out.println("Input: " + plot);
-
-            String plotChecked = checkPlotBits(plot);
-            System.out.println("Output: " + plotChecked);
-
-            outputClient.writeUTF(plotChecked);
-
-            serverSocket.close();
+                clientSocket.close();                
+                System.out.println("===========================================\n");
+            }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-
     }
 }

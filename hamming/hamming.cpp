@@ -131,11 +131,10 @@ int main(int argc, char *argv[])
     }
 
     int status, valread, client_fd;
-    struct sockaddr_in serv_addr;
-    client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in serv_addr;    
     char buffer[1024] = { 0 };
 
-    if(client_fd <= 0)
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         std::cout << "Error en la creacion del socket" << std::endl;
         return -1;
@@ -148,26 +147,34 @@ int main(int argc, char *argv[])
     // form
     if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
     {
-        printf(
-            "\nInvalid address/ Address not supported \n");
+        std::cout << "Invalid address/ Address not supported" << std::endl;
         return -1;
     }
   
     if ((status = connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) 
     {
-        printf("\nConnection Failed \n");
+        std::cout << "Connection Failed" << std::endl;
         return -1;
     }
-
-    // 1001 // 0111011 // 1001
+    
     char *plotBits = argv[1];
     std::string plot = hammingCode(plotBits);
+    plot += "\n";
+
+    // Put noise in the binary plot
 
     const char* ptrPlot = plot.c_str();
     send(client_fd, ptrPlot, strlen(ptrPlot), 0);
-    printf("Binary Plot sent\n");
+    printf("\n");
+    std::cout << "Binary Plot sent" << std::endl;
     valread = read(client_fd, buffer, 1024);
-    printf("%s\n", buffer);
+
+    std::cout << "\nRecived plot from server: " << buffer << std::endl;
+
+    // See if is the correct binary plot
+    std::string result = (plot == buffer) ? "CORRECTO" : "INCORRECTO";
+
+    std::cout << result << std::endl;
   
     // closing the connected socket
     close(client_fd);
