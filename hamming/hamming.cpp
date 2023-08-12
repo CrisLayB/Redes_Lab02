@@ -121,7 +121,7 @@ std::string printCode(int* arr, int totalLong)
 }
 
 int main(int argc, char *argv[])
-{
+{    
     if(argc != 2)
     {
         std::cout << "No ingresaste el trama de bits esperado" << std::endl;
@@ -143,8 +143,7 @@ int main(int argc, char *argv[])
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
 
-    // Convert IPv4 and IPv6 addresses from text to binary
-    // form
+    // Convert IPv4 and IPv6 addresses from text to binary form
     if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
     {
         std::cout << "Invalid address/ Address not supported" << std::endl;
@@ -157,12 +156,14 @@ int main(int argc, char *argv[])
         return -1;
     }
     
+    // ! Codify the individual character in binary ASCII
     char *plotBits = argv[1];
     std::string plot = hammingCode(plotBits);
     plot += "\n";
 
-    // Put noise in the binary plot
+    // ! Put noise in the binary plot
 
+    // Send the message
     const char* ptrPlot = plot.c_str();
     send(client_fd, ptrPlot, strlen(ptrPlot), 0);
     printf("\n");
@@ -170,13 +171,17 @@ int main(int argc, char *argv[])
     valread = read(client_fd, buffer, 1024);
 
     std::cout << "\nRecived plot from server: " << buffer << std::endl;
-
-    // See if is the correct binary plot
-    std::string result = (plot == buffer) ? "CORRECTO" : "INCORRECTO";
-
-    std::cout << result << std::endl;
-  
+    
     // closing the connected socket
     close(client_fd);
+
+    if(plot != buffer) // See if is the correct binary plot
+    {
+        std::cout << "The Binary Plot is incorrect" << std::endl;
+        return 0;
+    }
+
+    std::cout << "Decodify the binary code..." << std::endl;
+  
     return 1;
 }
