@@ -13,6 +13,12 @@
 
 package hamming;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 class Colors {
     public static final String RESET = "\033[0m";  // Text Reset
     public static final String RED = "\033[0;31m";     // RED
@@ -20,6 +26,7 @@ class Colors {
 }
 
 public class Hamming {
+    private static int PORT = 65432;
 
     public static String checkPlotBits(String plotBits) {
         int r = 0;
@@ -99,22 +106,32 @@ public class Hamming {
     }
     
     public static void main(String[] args) {
-        if(args.length != 2) {
-            System.out.println("No ingresaste el trama de bits esperado");
-            System.out.println("\nEjemplo de input esperado:");
-            System.out.println("java hamming/Hamming 10101001110 10101001110");
-            return;
-        }        
-        
-        String plot = args[0];
-        String plotTrue = args[1];
 
-        System.out.println("Input: " + plot);
+        try {
+            ServerSocket serverSocket = new ServerSocket(PORT);
+            System.out.println("Server listening on PORT " + PORT);
 
-        String plotChecked = checkPlotBits(plot);
-        System.out.println("Output: " + plotChecked);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("\n===========================================");
+                System.out.println("Client connected on the host: " + clientSocket.getInetAddress());
 
-        String result = (plotChecked.equals(plotTrue)) ? "CORRECTO" : "INCORRECTO";
-        System.out.println(result);
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                String plot = input.readLine();
+                System.out.println("Input: " + plot);
+                String plotChecked = checkPlotBits(plot);
+                System.out.println("Output: " + plotChecked);
+
+                output.println(plotChecked);
+                output.flush();
+
+                clientSocket.close();                
+                System.out.println("===========================================\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
