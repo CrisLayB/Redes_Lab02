@@ -29,13 +29,17 @@
 std::string hammingCode(std::string bits);
 bool verifyPow(int numVerify, int amountNums);
 std::string printCode(int* arr, int totalLong);
+int numberRandomInRange(int min, int max);
+std::string generateMessage(int lenght);
+std::string strToBinaryPlot(std::string text);
+std::string simulateNoise(std::string message, int probability);
 
 std::string hammingCode(std::string bits)
 {
     int m = bits.length();
     int r = 0;
 
-    std::cout << "Input: " << bits << std::endl;
+    std::cout << "\nInput: " << bits << std::endl;
 
     // 2^r >= m + r + 1
     while(pow(2, r) < (m + r + 1)) r++;
@@ -88,9 +92,9 @@ std::string hammingCode(std::string bits)
         nums[totalLong - 1 - i] = temp;
     }
 
-    std::cout << "Output: ";
+    std::cout << "\nOutput: ";
     std::string result = printCode(nums, totalLong);
-    std::cout << "r: " << r << std::endl;
+    // std::cout << "r: " << r << std::endl;
     return result;
 }
 
@@ -120,68 +124,140 @@ std::string printCode(int* arr, int totalLong)
     return str;
 }
 
+int numberRandomInRange(int min, int max)
+{
+    return (rand() % (max - min + 1)) + min;
+}
+
+std::string generateMessage(int length)
+{
+    std::string message;
+    static const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    std::mt19937 generator(time(0));
+    std::uniform_int_distribution<> distribution(0, sizeof(charset) - 2);
+
+    for (int i = 0; i < length; ++i) {
+        message += charset[distribution(generator)];
+    }
+
+    return message;
+}
+
+std::string strToBinaryPlot(std::string text)
+{
+    std::string binaryPlot;
+    
+    for (char c : text) 
+    {
+        std::bitset<8> binaryChar(c);
+        binaryPlot += binaryChar.to_string();
+    }
+    
+    return binaryPlot;
+}
+
+std::string simulateNoise(std::string text, int probability)
+{
+    std::string binaryPlotWithNoise = "";
+
+    for (char c : text)
+    {
+        if(rand() < probability)
+        {
+            binaryPlotWithNoise += (c == '0') ? '1' : '0';
+            continue;
+        }
+
+        binaryPlotWithNoise += c;
+    }
+    
+    return binaryPlotWithNoise;
+}
+
 int main(int argc, char *argv[])
-{    
-    if(argc != 2)
+{   
+    int numMessages = 2;
+    int amountMinMessages = 10;
+    int amountMaxMessages = 100;
+
+    for(int i = 0; i < numMessages; i++)
     {
-        std::cout << "No ingresaste el trama de bits esperado" << std::endl;
-        std::cout << "\nEjemplo de input esperado:" << std::endl;
-        std::cout << "./hamming/hamming 1011001" << std::endl;
-        return 0;
+        int sizeMessague = numberRandomInRange(amountMinMessages, amountMaxMessages);
+        std::string message = generateMessage(sizeMessague);
+
+        std::cout << "\n==============================================" << std::endl;
+        std::cout << "Message: " << message << std::endl;
+
+        std::string binaryPlot = strToBinaryPlot(message);
+
+        std::string plot = hammingCode(binaryPlot);
+
+        std::string plotWithNoise = simulateNoise(plot, 0.01);
+
+        std::cout << "\nOutput: " << plotWithNoise << std::endl;
+        
+        // ! Sent to the server the output binary plot
+
+        // ! Get the result of the server
+
+        // ! Compare if the output is right or not
+
+        // ! Save result
     }
+    
+    // int status, valread, client_fd;
+    // struct sockaddr_in serv_addr;    
+    // char buffer[1024] = { 0 };
 
-    int status, valread, client_fd;
-    struct sockaddr_in serv_addr;    
-    char buffer[1024] = { 0 };
+    // if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    // {
+    //     std::cout << "Error en la creacion del socket" << std::endl;
+    //     return -1;
+    // }
 
-    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        std::cout << "Error en la creacion del socket" << std::endl;
-        return -1;
-    }
+    // serv_addr.sin_family = AF_INET;
+    // serv_addr.sin_port = htons(PORT);
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
-
-    // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
-    {
-        std::cout << "Invalid address/ Address not supported" << std::endl;
-        return -1;
-    }
+    // // Convert IPv4 and IPv6 addresses from text to binary form
+    // if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
+    // {
+    //     std::cout << "Invalid address/ Address not supported" << std::endl;
+    //     return -1;
+    // }
   
-    if ((status = connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) 
-    {
-        std::cout << "Connection Failed" << std::endl;
-        return -1;
-    }
+    // if ((status = connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) 
+    // {
+    //     std::cout << "Connection Failed" << std::endl;
+    //     return -1;
+    // }
     
-    // ! Codify the individual character in binary ASCII
-    char *plotBits = argv[1];
-    std::string plot = hammingCode(plotBits);
-    plot += "\n";
+    // // ! Codify the individual character in binary ASCII
+    // char *plotBits = "";
+    // std::string plot = hammingCode(plotBits);
+    // plot += "\n";
 
-    // ! Put noise in the binary plot
+    // // ! Put noise in the binary plot
 
-    // Send the message
-    const char* ptrPlot = plot.c_str();
-    send(client_fd, ptrPlot, strlen(ptrPlot), 0);
-    printf("\n");
-    std::cout << "Binary Plot sent" << std::endl;
-    valread = read(client_fd, buffer, 1024);
+    // // Send the message
+    // const char* ptrPlot = plot.c_str();
+    // send(client_fd, ptrPlot, strlen(ptrPlot), 0);
+    // printf("\n");
+    // std::cout << "Binary Plot sent" << std::endl;
+    // valread = read(client_fd, buffer, 1024);
 
-    std::cout << "\nRecived plot from server: " << buffer << std::endl;
+    // std::cout << "\nRecived plot from server: " << buffer << std::endl;
     
-    // closing the connected socket
-    close(client_fd);
+    // // closing the connected socket
+    // close(client_fd);
 
-    if(plot != buffer) // See if is the correct binary plot
-    {
-        std::cout << "The Binary Plot is incorrect" << std::endl;
-        return 0;
-    }
+    // if(plot != buffer) // See if is the correct binary plot
+    // {
+    //     std::cout << "The Binary Plot is incorrect" << std::endl;
+    //     return 0;
+    // }
 
-    std::cout << "Decodify the binary code..." << std::endl;
+    // std::cout << "Decodify the binary code..." << std::endl;
   
     return 1;
 }

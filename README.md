@@ -16,13 +16,13 @@ Laboratorio 2
 
 ```
 g++ hamming/hamming.cpp -o hamming/hamming
-./hamming/hamming plot_bits
+./hamming/hamming
 ```
 
 Ejemplo:
 
 ```
-./hamming/hamming 1011001
+./hamming/hamming
 ```
 
 ```
