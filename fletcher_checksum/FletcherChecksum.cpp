@@ -11,14 +11,7 @@
  * ]
 ********************/
 
-#include <iostream>
 #include <fstream>
-#include <vector>
-#include <bitset>
-#include <algorithm>
-#include <string>
-#include <sstream>
-
 #include <iostream>
 #include <vector>
 #include <bitset>
@@ -115,7 +108,7 @@ void decodificarMensaje(const std::string& mensaje_original) {
         mensaje_decodificado += caracter;
     }
 
-    std::cout << "Mensaje Decodificado: " << mensaje_decodificado << std::endl;
+    std::cout << "Mensaje decodificado: " << mensaje_decodificado << std::endl;
 }
 
 int main() {
@@ -124,7 +117,7 @@ int main() {
     // Configuración del socket del servidor
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
-        std::cerr << "Error creating socket" << std::endl;
+        std::cerr << "Error creando socket" << std::endl;
         return 1;
     }
 
@@ -134,25 +127,25 @@ int main() {
     serverAddr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "Binding failed" << std::endl;
+        std::cerr << "Error en el binding" << std::endl;
         close(serverSocket);
         return 1;
     }
 
     if (listen(serverSocket, 1) == -1) {
-        std::cerr << "Listening failed" << std::endl;
+        std::cerr << "El listening fallo" << std::endl;
         close(serverSocket);
         return 1;
     }
 
-    std::cout << "Waiting for connections from the sender..." << std::endl;
+    std::cout << "Esperando a conexion del emisor..." << std::endl;
 
     while (true) {
         struct sockaddr_in clientAddr;
         socklen_t clientAddrLen = sizeof(clientAddr);
         int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
         if (clientSocket == -1) {
-            std::cerr << "Error accepting connection" << std::endl;
+            std::cerr << "Error de conexion" << std::endl;
             continue;
         }
 
@@ -161,7 +154,7 @@ int main() {
 
         int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
         if (bytesReceived == -1) {
-            std::cerr << "Error receiving data" << std::endl;
+            std::cerr << "Error recibiendo el mensaje." << std::endl;
             close(clientSocket);
             continue;
         }
@@ -169,11 +162,11 @@ int main() {
         std::string mensaje_emisor(buffer);
 
         if (verificarChecksum(mensaje_emisor)) {
-            std::cout << "The message is valid." << std::endl;
+            std::cout << "El mensaje es valido." << std::endl;
             std::string mensaje_original = obtenerMensajeOriginal(mensaje_emisor);
             decodificarMensaje(mensaje_original);
         } else {
-            std::cout << "The message has been altered during transmission." << std::endl;
+            std::cout << "El mensaje ha sido alterado durante la transmision." << std::endl;
         }
 
         close(clientSocket);
