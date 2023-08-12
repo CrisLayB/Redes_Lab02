@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
 
         std::string plot = hammingCode(binaryPlot);
 
-        std::string plotWithNoise = simulateNoise(plot, 0.01);
+        std::string plotWithNoise = simulateNoise(plot, 0.05);
 
         std::cout << "\nOutput: " << plotWithNoise << std::endl;
         
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
     }
 
     // Save data
-    const std::string filename = "data/hammingResults.csv";
+    const std::string filename = "data/hammingResults5Porcent.csv";
     std::ofstream file(filename);
     if (file.is_open()) 
     {
