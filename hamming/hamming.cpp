@@ -23,9 +23,12 @@
 #include <ifaddrs.h>
 #include <unistd.h>
 
+#include <random>
+
 #define HOST "127.0.0.1"
 #define PORT 65432
 
+// Define Methods
 std::string hammingCode(std::string bits);
 bool verifyPow(int numVerify, int amountNums);
 std::string printCode(int* arr, int totalLong);
@@ -33,6 +36,7 @@ int numberRandomInRange(int min, int max);
 std::string generateMessage(int lenght);
 std::string strToBinaryPlot(std::string text);
 std::string simulateNoise(std::string message, int probability);
+std::string makeProcess(std::string plot);
 
 std::string hammingCode(std::string bits)
 {
@@ -160,10 +164,17 @@ std::string strToBinaryPlot(std::string text)
 std::string simulateNoise(std::string text, int probability)
 {
     std::string binaryPlotWithNoise = "";
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
+    float minValue = 0.0;
+    float maxValue = 1.0;
+    std::uniform_real_distribution<float> distribution(minValue, maxValue);
 
     for (char c : text)
     {
-        if(rand() < probability)
+        float randomFloat = distribution(generator);
+        if(randomFloat < probability)
         {
             binaryPlotWithNoise += (c == '0') ? '1' : '0';
             continue;
@@ -175,15 +186,66 @@ std::string simulateNoise(std::string text, int probability)
     return binaryPlotWithNoise;
 }
 
+std::string makeProcess(std::string plot)
+{
+    plot += "\n";
+
+    int status, valread, client_fd;
+    struct sockaddr_in serv_addr;    
+    char buffer[1024] = { 0 };
+
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        std::cout << "Error en la creacion del socket" << std::endl;
+        close(client_fd);
+        return "";
+    }
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
+    {
+        std::cout << "Invalid address/ Address not supported" << std::endl;
+        close(client_fd);
+        return "";
+    }
+  
+    if ((status = connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) 
+    {
+        std::cout << "Connection Failed" << std::endl;
+        close(client_fd);
+        return "";
+    }
+        
+    // Send the message
+    const char* ptrPlot = plot.c_str();
+    send(client_fd, ptrPlot, strlen(ptrPlot), 0);
+    printf("\n");
+    std::cout << "Binary Plot sent" << std::endl;
+    valread = read(client_fd, buffer, 1024);
+
+    std::cout << "\nRecived plot from server: " << buffer << std::endl;
+    
+    // closing the connected socket
+    close(client_fd);
+
+    std::string result = buffer;
+    result.erase(result.size() - 1);
+    return result;
+}
+
 int main(int argc, char *argv[])
 {   
-    int numMessages = 2;
-    int amountMinMessages = 10;
-    int amountMaxMessages = 100;
+    int numMessages = 10000;
+    int amountMinChars = 10;
+    int amountMaxChars = 100;
+    std::vector<int> data;
 
     for(int i = 0; i < numMessages; i++)
     {
-        int sizeMessague = numberRandomInRange(amountMinMessages, amountMaxMessages);
+        int sizeMessague = numberRandomInRange(amountMinChars, amountMaxChars);
         std::string message = generateMessage(sizeMessague);
 
         std::cout << "\n==============================================" << std::endl;
@@ -197,67 +259,33 @@ int main(int argc, char *argv[])
 
         std::cout << "\nOutput: " << plotWithNoise << std::endl;
         
-        // ! Sent to the server the output binary plot
+        std::string plotProcessed = makeProcess(plotWithNoise);
+        
+        std::string result = (plot == plotProcessed)
+            ? "CORRECTO"
+            : "INCORRECTO";
 
-        // ! Get the result of the server
+        std::cout << result << std::endl;
 
-        // ! Compare if the output is right or not
+        int num = (plot == plotProcessed) ? 1 : 0;
+        data.push_back(num);
+    }
 
-        // ! Save result
+    // Save data
+    const std::string filename = "data/hammingResults.csv";
+    std::ofstream file(filename);
+    if (file.is_open()) 
+    {
+        for(int num : data)
+        {
+            file << num;
+            file << "\n";
+        }
+        file.close();
+        std::cout << "Data saved to " << filename << std::endl;
+    } else {
+        std::cerr << "Unable to open file: " << filename << std::endl;
     }
     
-    // int status, valread, client_fd;
-    // struct sockaddr_in serv_addr;    
-    // char buffer[1024] = { 0 };
-
-    // if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    // {
-    //     std::cout << "Error en la creacion del socket" << std::endl;
-    //     return -1;
-    // }
-
-    // serv_addr.sin_family = AF_INET;
-    // serv_addr.sin_port = htons(PORT);
-
-    // // Convert IPv4 and IPv6 addresses from text to binary form
-    // if (inet_pton(AF_INET, HOST, &serv_addr.sin_addr) <= 0) 
-    // {
-    //     std::cout << "Invalid address/ Address not supported" << std::endl;
-    //     return -1;
-    // }
-  
-    // if ((status = connect(client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))) < 0) 
-    // {
-    //     std::cout << "Connection Failed" << std::endl;
-    //     return -1;
-    // }
-    
-    // // ! Codify the individual character in binary ASCII
-    // char *plotBits = "";
-    // std::string plot = hammingCode(plotBits);
-    // plot += "\n";
-
-    // // ! Put noise in the binary plot
-
-    // // Send the message
-    // const char* ptrPlot = plot.c_str();
-    // send(client_fd, ptrPlot, strlen(ptrPlot), 0);
-    // printf("\n");
-    // std::cout << "Binary Plot sent" << std::endl;
-    // valread = read(client_fd, buffer, 1024);
-
-    // std::cout << "\nRecived plot from server: " << buffer << std::endl;
-    
-    // // closing the connected socket
-    // close(client_fd);
-
-    // if(plot != buffer) // See if is the correct binary plot
-    // {
-    //     std::cout << "The Binary Plot is incorrect" << std::endl;
-    //     return 0;
-    // }
-
-    // std::cout << "Decodify the binary code..." << std::endl;
-  
     return 1;
 }
