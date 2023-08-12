@@ -35,7 +35,7 @@ std::string printCode(int* arr, int totalLong);
 int numberRandomInRange(int min, int max);
 std::string generateMessage(int lenght);
 std::string strToBinaryPlot(std::string text);
-std::string simulateNoise(std::string message, int probability);
+std::string simulateNoise(std::string message, float probability);
 std::string makeProcess(std::string plot);
 
 std::string hammingCode(std::string bits)
@@ -161,7 +161,7 @@ std::string strToBinaryPlot(std::string text)
     return binaryPlot;
 }
 
-std::string simulateNoise(std::string text, int probability)
+std::string simulateNoise(std::string text, float probability)
 {
     std::string binaryPlotWithNoise = "";
     std::random_device rd;

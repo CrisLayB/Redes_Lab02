@@ -45,3 +45,19 @@ Input: 10101001110
 Output: Todo bien 10101001110
 CORRECTO
 ```
+
+## => Código Hamming
+
+### Java - Emisor
+
+```
+javac fletcherchecksum/FletcherChecksum.java
+java fletcherchecksum/FletcherChecksum
+```
+
+### C++ - Receptor
+
+```
+g++ fletcherchecksum/FletcherChecksum.cpp -o fletcherchecksum/FletcherChecksum
+./fletcherchecksum/FletcherChecksum
+```

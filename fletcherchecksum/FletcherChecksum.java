@@ -11,15 +11,12 @@
  * ]
  *************************************************************/
 
-package fletcher_checksum;
+package fletcherchecksum;
  
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
 
