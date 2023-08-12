@@ -21,13 +21,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
 
-
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-
 class Emisor {
     private static final int binarySize = 8;
     private String trama;
